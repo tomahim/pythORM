@@ -2,7 +2,7 @@ from datetime import datetime
 
 from utils.utils import enum
 
-ColumnType = enum('STRING', 'DATETIME')
+ColumnType = enum('STRING', 'DATETIME', 'NUMERIC')
 
 
 class Column:
@@ -14,6 +14,8 @@ class Column:
         self.column_name = column_name
         self.column_type = column_type
         self.primary_key = primary_key
+        # FIXME: foreign_key is not used for now
+        # TODO: use foreign_key for joining models and check foreign key constraint on persistence
         self.foreign_key = foreign_key
         pass
 

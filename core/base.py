@@ -35,11 +35,6 @@ class Base(object):
     def delete(self):
         return self.db.delete(self)
 
-    def get_model_name(self):
-        """ Determine a string identifier for the model based on the class name
-        @:return model class name """
-        return self.__class__.__name__ if isinstance(self, Base) else self.__name__
-
 
 class ModelRestrictionError(Exception):
     """ Specific Exception class for model definition checks """
