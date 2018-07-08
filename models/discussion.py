@@ -73,10 +73,6 @@ class Discussion(Base):
     def posts(self):
         return self._posts
 
-    @permissions_check(PermissionType.READ_DISCUSSION)
-    def read_discussion(self):
-        return self.db.find_by_id(self, self.id)
-
     @posts.setter
     def posts(self, posts):
         self._posts = posts

@@ -7,6 +7,11 @@ class ForbiddenActionException(Exception):
         self.msg = msg
 
 
+class UserNotLoggedException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+
 PermissionType = enum(
     'READ_DISCUSSION',
     'ADD_POST',
@@ -24,7 +29,7 @@ def permissions_check(permission):
         def wrapper(*args, **kwargs):
             user_session = UserSession()
             if not user_session.current_user:
-                raise ForbiddenActionException('User should be connected')
+                raise UserNotLoggedException('User should be connected')
             if permission and permission in UserSession.current_user.permissions:
                 return func(*args, **kwargs)
             else:

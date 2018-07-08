@@ -1,3 +1,5 @@
+import unittest
+
 from models.user import User
 from security.auth import UserSession
 from models.discussion import Discussion

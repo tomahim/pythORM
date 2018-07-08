@@ -91,11 +91,11 @@ class Post(Base):
 
     @property
     def ideas_ids(self):
-        return self.__ideas_ids
+        return self._ideas_ids
 
     @ideas_ids.setter
-    def _ideas_ids(self, _ideas_ids):
-        self.__ideas_ids = _ideas_ids
+    def ideas_ids(self, ideas_ids):
+        self._ideas_ids = ideas_ids
 
     @permissions_check(PermissionType.ADD_POST)
     def persist(self):
@@ -105,6 +105,7 @@ class Post(Base):
     def delete(self):
         return super(Post, self).delete()
 
+    @permissions_check(PermissionType.ADD_POST)
     def reply_with_post(self, post):
         """ Reply to the current post by another post
         @:return the persisted reply to the post """
