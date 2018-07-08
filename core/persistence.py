@@ -43,6 +43,8 @@ class InMemory(DB):
     def find_one_by(self, model, column_name, column_value):
         model_name = self.__get_model_name(model)
         all_items = self.store.get(model_name)
+        print(model_name)
+        print(all_items)
         if not all_items:
             return None
         return next(iter([item for item in all_items if getattr(item, column_name) == column_value]), None)
@@ -71,6 +73,7 @@ class InMemory(DB):
         # update if a primary key is already defined
         if obj_id:
             existing = self.find_by_id(model, obj_id)
+            print(existing)
             if existing:
                 map(lambda item: model if getattr(item, pk_column.column_name) == obj_id else item,
                     self.store.get(model_name))
