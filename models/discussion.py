@@ -2,6 +2,8 @@ from core.base import Base
 from core.column import Column, ColumnType
 from datetime import datetime
 
+from security.permission import permissions_check, PermissionType
+
 
 class Discussion(Base):
     """This describes the model for a Discussion.
@@ -71,6 +73,10 @@ class Discussion(Base):
     def posts(self):
         return self._posts
 
+    @permissions_check(PermissionType.READ_DISCUSSION)
+    def read_discussion(self):
+        return self.db.find_by_id(self, self.id)
+
     @posts.setter
     def posts(self, posts):
         self._posts = posts
@@ -86,12 +92,3 @@ class Discussion(Base):
 
     def number_of_participants(self):
         pass
-
-
-if __name__ == "__main__":
-    discussion1 = Discussion(
-        name='Discussion about environmental issues',
-        title='How to deal with the environmental issue caused by cars ?',
-        creation_date=datetime.now()
-    )
-    print(discussion1.name)

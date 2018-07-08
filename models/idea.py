@@ -4,7 +4,7 @@ from core.base import Base
 from core.column import Column, ColumnType
 from core.persistence import JoinType
 from models.post import Post
-from security.permission import ForbiddenActionException
+from security.permission import ForbiddenActionException, PermissionType, permissions_check
 
 
 class Idea(Base):
@@ -20,7 +20,8 @@ class Idea(Base):
         Column('creation_date', ColumnType.DATETIME),
     ]
 
-    def __init__(self, discussion_id, title, description, creator_id, parent_idea_id=None, creation_date=datetime.now(), **kwargs):
+    def __init__(self, discussion_id, title, description, creator_id, parent_idea_id=None, creation_date=datetime.now(),
+                 **kwargs):
         super(Idea, self).__init__(**kwargs)
         self._id = None
         self._discussion_id = discussion_id
@@ -95,20 +96,16 @@ class Idea(Base):
     def ideas(self, ideas):
         self._ideas = ideas
 
-    @property
-    def posts(self):
-        return self._posts
+    @permissions_check(PermissionType.ADD_IDEA)
+    def persist(self):
+        return super(Idea, self).persist()
 
-    @posts.setter
-    def posts(self, posts):
-        self._posts = posts
+    @permissions_check(PermissionType.REMOVE_IDEA)
+    def delete(self):
+        return super(Idea, self).delete()
 
-    def add_idea(self, idea):
-        idea.parent_idea_id = self.id
-        self.ideas.append(idea)
-
-    def associate_with(self, idea):
-        """ Associate one idea with another by its idea
+    def associate_to_idea(self, idea):
+        """ Define an Idea as a sub-idea for the current Idea
         @:return updated Idea """
         if self.discussion_id == idea.discussion_id:
             idea.parent_idea_id = self.id
@@ -127,10 +124,11 @@ class Idea(Base):
         """ Recursively find children ideas
         @:return list of children of an Idea"""
         children = self.db.find_list_by(self, 'parent_idea_id', obj_id)
-        if len(children) > 0:
-            return children + self.__find_children_ideas(ideas, getattr(children[0], 'id'))
-        else:
-            return children
+        for child in children:
+            if len(children) > 0:
+                return [child] + self.__find_children_ideas(ideas, getattr(child, 'id'))
+            else:
+                return children
 
     def __get_posts_associated_to_idea(self):
         """ Get all posts associated to an idea including the posts associated to sub-ideas
@@ -142,13 +140,37 @@ class Idea(Base):
 
     def number_of_messages(self):
         """ Retrieve number of Posts associated to the Idea
-        @:return number """
+        @:return number"""
         # exclude redundant ids
         unique_posts = {post_id for post_id in [post.id for post in self.__get_posts_associated_to_idea()]}
         return len(unique_posts)
 
     def number_of_participants(self):
-        """  """
-        posts = self.__get_posts_associated_to_idea()
-        return posts
-        pass
+        """ Retrieve number of users who posted something about this Idea
+        @:return number"""
+        # exclude redundant ids
+        unique_users = {creator_id for creator_id in [post.creator_id for post in self.__get_posts_associated_to_idea()]}
+
+        return len(unique_users)
+
+    def print_all_ideas(self):
+        """ Print a tree representing the Idea and its sub-ideas """
+        print(self.title)
+        direct_children = self.db.find_list_by(self, 'parent_idea_id', self.id)
+        level = 0
+        self.__print_ideas_recursively(direct_children, self.id, level)
+
+    def __print_ideas_recursively(self, ideas, obj_id, level):
+        """ Recursively find children ideas
+        @:return list of children of an Idea"""
+
+        children = self.db.find_list_by(self, 'parent_idea_id', obj_id)
+        if len(children) > 0:
+            return children + self.__print_ideas_recursively(ideas, getattr(children[0], 'id'), level + 1)
+        else:
+            level -= 1
+            print('     ' * level + children[0].id)
+            return children
+
+
+

@@ -9,7 +9,7 @@ class User(Base):
         Column('id', ColumnType.STRING, primary_key=True),
         Column('username', ColumnType.STRING),
         Column('email', ColumnType.STRING),
-        Column('password', ColumnType.STRING),
+        Column('password', ColumnType.STRING)
     ]
 
     def __init__(self, username, email, password, **kwargs):
@@ -18,6 +18,7 @@ class User(Base):
         self._username = username
         self._email = email
         self._password = password
+        self._permissions = []
 
     @property
     def id(self):
@@ -50,3 +51,15 @@ class User(Base):
     @password.setter
     def password(self, password):
         self._password = password
+
+    @property
+    def permissions(self):
+        return self._permissions
+
+    @permissions.setter
+    def permissions(self, permissions):
+        self._permissions = permissions
+
+    def set_global_permissions(self, permissions):
+        self.permissions = permissions
+

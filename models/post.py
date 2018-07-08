@@ -2,7 +2,7 @@ from datetime import datetime
 
 from core.base import Base
 from core.column import Column, ColumnType
-from security.permission import ForbiddenActionException
+from security.permission import ForbiddenActionException, PermissionType, permissions_check
 
 
 class Post(Base):
@@ -96,6 +96,14 @@ class Post(Base):
     @ideas_ids.setter
     def _ideas_ids(self, _ideas_ids):
         self.__ideas_ids = _ideas_ids
+
+    @permissions_check(PermissionType.ADD_POST)
+    def persist(self):
+        return super(Post, self).persist()
+
+    @permissions_check(PermissionType.REMOVE_POST)
+    def delete(self):
+        return super(Post, self).delete()
 
     def reply_with_post(self, post):
         """ Reply to the current post by another post

@@ -27,6 +27,8 @@ class Column:
             return isinstance(value, basestring)
         elif self.column_type == ColumnType.DATETIME:
             return type(value) is datetime
+        elif self.column_type == ColumnType.NUMERIC:
+            return type(value)
 
 
 def get_primary_key_column(model):
