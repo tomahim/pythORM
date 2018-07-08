@@ -3,26 +3,17 @@ import unittest
 from datetime import datetime
 
 from core.base import Base
-from core.column import Column, ColumnType, get_model_columns
+from core.column import Column, ColumnType, get_primary_key_column
 
 
 class ModelExample(Base):
     """ Class used for tests """
     model_name = 'example'
-    name = Column('name', ColumnType.STRING)
-    creation_date = Column('creation_date', ColumnType.DATETIME)
-    not_a_column = 'test'
-    __private_variable = 'test2'
-
-    def __init__(self):
-        pass
-
-    def some_method(self):
-        pass
-
-    @property
-    def some_property(self):
-        return None
+    columns = [
+        Column('id', ColumnType.STRING, primary_key=True),
+        Column('name', ColumnType.STRING),
+        Column('creation_date', ColumnType.DATETIME)
+    ]
 
 
 class TestColumn(unittest.TestCase):
@@ -36,7 +27,7 @@ class TestColumn(unittest.TestCase):
         # given
         column = Column('string_column', ColumnType.STRING)
         # when
-        result = column.is_correct_value(15)
+        result = column.is_correct_value_type(15)
         # then
         self.assertFalse(result)
 
@@ -44,7 +35,7 @@ class TestColumn(unittest.TestCase):
         # given
         column = Column('string_column', ColumnType.STRING)
         # when
-        result = column.is_correct_value('test')
+        result = column.is_correct_value_type('test')
         # then
         self.assertTrue(result)
 
@@ -52,7 +43,7 @@ class TestColumn(unittest.TestCase):
         # given
         column = Column('datetime_column', ColumnType.DATETIME)
         # when
-        result = column.is_correct_value('test')
+        result = column.is_correct_value_type('test')
         # then
         self.assertFalse(result)
 
@@ -60,12 +51,10 @@ class TestColumn(unittest.TestCase):
         # given
         column = Column('datetime_column', ColumnType.DATETIME)
         # when
-        result = column.is_correct_value(datetime.now())
+        result = column.is_correct_value_type(datetime.now())
         # then
         self.assertTrue(result)
 
-    def test_get_model_columns_should_retrieve_only_column_variables(self):
-        columns = get_model_columns(ModelExample())
-        self.assertEqual(len(columns), 2)
-        self.assertTrue('name' in columns)
-        self.assertTrue('creation_date' in columns)
+    def test_get_primary_column_should_retrieve_id(self):
+        col = get_primary_key_column(ModelExample())
+        self.assertEqual(col.column_name, 'id')

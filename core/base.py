@@ -1,31 +1,44 @@
 from abc import ABCMeta, abstractproperty
 
-from core.column import Column, get_model_columns
+from persistence import InMemory
 
 
 class Base(object):
-    """ The Base abstract class """
     __metaclass__ = ABCMeta
+    """ The Base class
+        Every model should inherit from this class
+        It gives the ability to define a model with columns and type checking
+    """
+
+    db = InMemory()
 
     def __init__(self, **kwargs):
-        columns = get_model_columns(self)
-
-        # dynamically define class instance variables with columns definition check
+        # Check columns definition
         for column_name in kwargs:
-            column_value = kwargs[column_name]
+            column = next(iter([col for col in self.columns if col.column_name == column_name]), None)
+            column_value = kwargs.get(column_name)
 
-            if column_name not in columns:
+            if not column:
                 raise ModelRestrictionError('Unknown column ' + column_name)
 
-            if not columns[column_name].is_correct_value(column_value):
+            if not column.is_correct_value_type(column_value):
                 raise ModelRestrictionError('Value type not allowed for ' + column_name)
 
-            setattr(self, column_name, kwargs[column_name])
-
     @abstractproperty
-    def model_name(self):
-        """ String identifier for a model """
-        pass
+    def columns(self):
+        """ Columns list defining the model """
+        return []
+
+    def persist(self):
+        return self.db.upsert(self)
+
+    def delete(self):
+        return self.db.delete(self)
+
+    def get_model_name(self):
+        """ Determine a string identifier for the model based on the class name
+        @:return model class name """
+        return self.__class__.__name__ if isinstance(self, Base) else self.__name__
 
 
 class ModelRestrictionError(Exception):

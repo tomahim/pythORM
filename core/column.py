@@ -10,12 +10,14 @@ class Column:
         The definition includes column name and the type of data
      """
 
-    def __init__(self, column_name, column_type):
+    def __init__(self, column_name, column_type, primary_key=False, foreign_key=False):
         self.column_name = column_name
         self.column_type = column_type
+        self.primary_key = primary_key
+        self.foreign_key = foreign_key
         pass
 
-    def is_correct_value(self, value):
+    def is_correct_value_type(self, value):
         """ Determines if the value match the defined Column type
             @return: boolean
         """
@@ -25,10 +27,8 @@ class Column:
             return type(value) is datetime
 
 
-def get_model_columns(model):
-    """ Inspect model object to get the defined Column objects
-    @return: a dictionary with column names and attr
+def get_primary_key_column(model):
+    """ Get the primary key Column
+    @return: The Column object
     """
-    all_class_attributes = [getattr(model, attr_name) for attr_name in dir(model)]
-    columns = [attr for attr in all_class_attributes if isinstance(attr, Column)]
-    return dict(zip(map(lambda x: x.column_name, columns), columns))
+    return next(iter([col for col in model.columns if col.primary_key]), None)
