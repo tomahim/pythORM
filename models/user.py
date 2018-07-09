@@ -63,3 +63,6 @@ class User(Base):
     def set_global_permissions(self, permissions):
         self.permissions = permissions
 
+    def set_local_permission(self):
+        raise NotImplementedError()
+

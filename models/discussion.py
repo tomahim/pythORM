@@ -1,8 +1,7 @@
-from core.base import Base
-from core.column import Column, ColumnType
 from datetime import datetime
 
-from security.permission import permissions_check, PermissionType
+from core.base import Base
+from core.column import Column, ColumnType
 
 
 class Discussion(Base):
@@ -81,10 +80,10 @@ class Discussion(Base):
         self._posts = self.posts + post
 
     def all_posts_associated_to_idea(self, idea_id):
-        pass
+        raise NotImplementedError()
 
     def all_posts_not_associated_to_idea(self):
-        pass
+        raise NotImplementedError()
 
     def number_of_participants(self):
-        pass
+        raise NotImplementedError()

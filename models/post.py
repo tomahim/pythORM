@@ -18,13 +18,14 @@ class Post(Base):
         Column('creation_date', ColumnType.DATETIME),
     ]
 
-    def __init__(self, discussion_id, text, creator_id, upvote_count=0, creation_date=datetime.now(), **kwargs):
+    def __init__(self, discussion_id, text, creator_id, parent_post_id=None, parent_idea_id=None, upvote_count=0,
+                 creation_date=datetime.now(), **kwargs):
         super(Post, self).__init__(**kwargs)
         self._id = None
         self._discussion_id = discussion_id
         self._creator_id = creator_id
-        self._parent_post_id = None
-        self._parent_idea_id = None
+        self._parent_post_id = parent_post_id
+        self._parent_idea_id = parent_idea_id
         self._text = text
         self._upvote_count = upvote_count
         self._creation_date = creation_date
@@ -105,6 +106,9 @@ class Post(Base):
     def delete(self):
         return super(Post, self).delete()
 
+    def get_total_posts(self):
+        return len(self.db.find_all())
+
     @permissions_check(PermissionType.ADD_POST)
     def reply_with_post(self, post):
         """ Reply to the current post by another post
@@ -118,7 +122,7 @@ class Post(Base):
 
     def associate_with_idea(self, idea):
         """ Associate one Post with an Idea
-        @:return updated  """
+        @:return updated Post """
         if self.discussion_id == idea.discussion_id:
             idea.parent_post_id = self.id
             self.ideas_ids.append(idea.id)
@@ -129,14 +133,31 @@ class Post(Base):
     def get_all_children_posts(self):
         """ Given a Post, retrieve all children posts associated
         @:return list of children of a Post"""
-        direct_children = self.db.find_list_by(self, 'parent_post_id', self.id)
-        return self.__find_children_posts(direct_children, self.id)
+        return self.__find_children_posts(self.db.find_all(self), [self.id])
 
-    def __find_children_posts(self, posts, obj_id):
-        """ Recursively find children posts
+    def __find_children_posts(self, posts, child_ids):
+        """ Recursively build a list of find children posts
         @:return list of children of a Post"""
-        children = self.db.find_list_by(self, 'parent_post_id', obj_id)
+        children = self.db.find_list_by(self, 'parent_post_id', child_ids, in_operator=True)
         if len(children) > 0:
-            return children + self.__find_children_posts(posts, getattr(children[0], 'id'))
+            return children + self.__find_children_posts(posts, [child.id for child in children])
         else:
-            return children
+            return []
+
+    def print_all_posts(self):
+        """ Print a tree representing the Posts and the sub-posts """
+        print('Tree of posts \n\n' + self.text)
+        self.__print_posts_recursively(self.db.find_all(self), [self.id])
+
+    def __print_posts_recursively(self, posts, child_ids, level=0):
+        """ Recursively print children posts hierarchy
+        @:return list of children of an Post"""
+
+        children = self.db.find_list_by(self, 'parent_post_id', child_ids, in_operator=True)
+        if len(children) > 0:
+            print('    ' * (level + 1) + children[0].text)
+            return self.__print_posts_recursively(posts, [children[0].id], level + 1) + \
+                   self.__print_posts_recursively(posts, [child.id for child in children[:1]], level + 1)
+        else:
+            level -= 1
+            return []

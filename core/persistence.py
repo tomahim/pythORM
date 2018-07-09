@@ -11,6 +11,10 @@ class DB(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
+    def find_all(self, model):
+        pass
+
+    @abstractmethod
     def find_by_id(self, model, obj_id):
         pass
 
@@ -31,7 +35,7 @@ class DB(object):
         pass
 
 
-JoinType = enum('INNER', 'RIGHT')
+JoinType = enum('INNER', 'LEFT')
 
 
 class InMemory(DB):
@@ -40,11 +44,13 @@ class InMemory(DB):
     # dictionary containing all the model data (with Base.model_name as keys)
     store = dict()
 
+    def find_all(self, model):
+        model_name = self.__get_model_name(model)
+        return self.store.get(model_name)
+
     def find_one_by(self, model, column_name, column_value):
         model_name = self.__get_model_name(model)
         all_items = self.store.get(model_name)
-        print(model_name)
-        print(all_items)
         if not all_items:
             return None
         return next(iter([item for item in all_items if getattr(item, column_name) == column_value]), None)
@@ -53,15 +59,15 @@ class InMemory(DB):
         pk_column = get_primary_key_column(model)
         return self.find_one_by(model, pk_column.column_name, obj_id)
 
-    def find_list_by(self, model, column_name, column_value, in_operator=False, join=None):
+    def find_list_by(self, model, column_name, column_value, in_operator=False, join=JoinType.INNER):
         model_name = self.__get_model_name(model)
         all_items = self.store.get(model_name)
         if not all_items:
             return None
-        if in_operator and join == JoinType.RIGHT:
+        if in_operator and join == JoinType.LEFT:
             return [item for item in all_items if len(set(column_value) & set(getattr(item, column_name))) > 0]
         elif in_operator and join == JoinType.INNER:
-            return [item for item in all_items if column_value in getattr(item, column_name)]
+            return [item for item in all_items if getattr(item, column_name) in column_value]
         else:
             return [item for item in all_items if column_value == getattr(item, column_name)]
 

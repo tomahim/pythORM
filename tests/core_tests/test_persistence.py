@@ -71,8 +71,6 @@ class TestPersistence(unittest.TestCase):
     # def test_in_memory_upsert_with_existing_data(self):
     #     # when
     #     entry = db.store.get('ModelExample')
-    #     print('heeee')
-    #     print(entry.id)
     #     result = db.upsert(mock_model)
     #
     #     # then

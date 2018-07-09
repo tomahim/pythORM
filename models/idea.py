@@ -117,18 +117,16 @@ class Idea(Base):
     def get_all_children_ideas(self):
         """ Given an Idea, retrieve all children ideas associated
         @:return list of children of an Idea"""
-        direct_children = self.db.find_list_by(self, 'parent_idea_id', self.id)
-        return self.__find_children_ideas(direct_children, self.id)
+        return self.__find_children_ideas(self.db.find_all(self), [self.id])
 
-    def __find_children_ideas(self, ideas, obj_id):
+    def __find_children_ideas(self, ideas, children_ids):
         """ Recursively find children ideas
         @:return list of children of an Idea"""
-        children = self.db.find_list_by(self, 'parent_idea_id', obj_id)
-        for child in children:
-            if len(children) > 0:
-                return [child] + self.__find_children_ideas(ideas, getattr(child, 'id'))
-            else:
-                return children
+        children = self.db.find_list_by(self, 'parent_idea_id', children_ids, in_operator=True)
+        if len(children) > 0:
+            return children + self.__find_children_ideas(ideas, [child.id for child in children])
+        else:
+            return []
 
     def __get_posts_associated_to_idea(self):
         """ Get all posts associated to an idea including the posts associated to sub-ideas
@@ -136,41 +134,39 @@ class Idea(Base):
         # retrieve all children ideas ids including the current idea
         ideas_ids = [self.id] + [idea.id for idea in self.get_all_children_ideas()]
         # get each posts matching at least on of these ids
-        return self.db.find_list_by(Post, 'ideas_ids', ideas_ids, in_operator=True, join=JoinType.RIGHT)
+        return self.db.find_list_by(Post, 'ideas_ids', ideas_ids, in_operator=True, join=JoinType.LEFT)
 
     def number_of_messages(self):
         """ Retrieve number of Posts associated to the Idea
         @:return number"""
+        posts_associated = self.__get_posts_associated_to_idea()
         # exclude redundant ids
-        unique_posts = {post_id for post_id in [post.id for post in self.__get_posts_associated_to_idea()]}
+        unique_posts = {post_id for post_id in [post.id for post in posts_associated]}
         return len(unique_posts)
 
     def number_of_participants(self):
         """ Retrieve number of users who posted something about this Idea
         @:return number"""
         # exclude redundant ids
-        unique_users = {creator_id for creator_id in [post.creator_id for post in self.__get_posts_associated_to_idea()]}
+        unique_users = {creator_id for creator_id in
+                        [post.creator_id for post in self.__get_posts_associated_to_idea()]}
 
         return len(unique_users)
 
     def print_all_ideas(self):
         """ Print a tree representing the Idea and its sub-ideas """
-        print(self.title)
-        direct_children = self.db.find_list_by(self, 'parent_idea_id', self.id)
-        level = 0
-        self.__print_ideas_recursively(direct_children, self.id, level)
+        print('Tree of ideas \n' + self.title)
+        self.__print_ideas_recursively(self.db.find_all(self), [self.id], 0)
 
-    def __print_ideas_recursively(self, ideas, obj_id, level):
-        """ Recursively find children ideas
+    def __print_ideas_recursively(self, ideas, child_ids, level):
+        """ Recursively print children ideas hierarchy
         @:return list of children of an Idea"""
 
-        children = self.db.find_list_by(self, 'parent_idea_id', obj_id)
+        children = self.db.find_list_by(self, 'parent_idea_id', child_ids, in_operator=True)
         if len(children) > 0:
-            return children + self.__print_ideas_recursively(ideas, getattr(children[0], 'id'), level + 1)
+            print('    ' * level + children[0].title)
+            return self.__print_ideas_recursively(ideas, [children[0].id], level) \
+                   + self.__print_ideas_recursively(ideas, [child.id for child in children[1:]], level + 1)
         else:
             level -= 1
-            print('     ' * level + children[0].id)
-            return children
-
-
-
+            return []

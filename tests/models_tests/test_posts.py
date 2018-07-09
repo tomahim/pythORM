@@ -2,9 +2,12 @@ import unittest
 
 from mock import mock
 
+from models.idea import Idea
 from models.post import Post
 from models.user import User
 from security.permission import PermissionType, ForbiddenActionException
+
+# prepare some tests data
 
 mock_user_forbidden = User(
     username='anna',
@@ -32,6 +35,59 @@ mock_user_allowed_for_remove = User(
 mock_user_allowed_for_remove.set_global_permissions([
     PermissionType.REMOVE_POST
 ])
+
+
+post1 = Post(
+    discussion_id='1234',
+    text='Test1',
+    creator_id='1234',
+    parent_post_id=None
+)
+post1.id = '1'
+
+post2 = Post(
+    discussion_id='1234',
+    text='Test2',
+    creator_id='1234',
+    parent_post_id='1'
+)
+post2.id = '2'
+
+post3 = Post(
+    discussion_id='1234',
+    text='Test3',
+    creator_id='1234',
+    parent_post_id='2'
+)
+post3.id = '3'
+
+post4 = Post(
+    discussion_id='1234',
+    text='Test4',
+    creator_id='1234',
+    parent_post_id='1'
+)
+post4.id = '4'
+
+post5 = Post(
+    discussion_id='1234',
+    text='Test5',
+    creator_id='1234',
+    parent_post_id='1'
+)
+post5.id = '4'
+
+idea1 = Idea(
+    discussion_id='1234',
+    title='Test1',
+    description='Test1',
+    creator_id='1234',
+    parent_idea_id=None
+)
+idea1.id = '1'
+
+mock_posts = [post1, post2, post3, post4, post5]
+mock_ideas = [idea1]
 
 
 class TestPost(unittest.TestCase):
@@ -136,3 +192,19 @@ class TestPost(unittest.TestCase):
 
         # then
         self.assertEqual(post._upvote_count, 0)
+
+    @mock.patch("core.base.Base.db.store", dict(
+        Post=mock_posts,
+        Idea=mock_ideas
+    ))
+    def test_post_associate_with_ideas_should_pass(self):
+        updated_idea = post1.associate_with_idea(idea1)
+        self.assertEqual(updated_idea.parent_post_id, '1')
+        self.assertEqual(post1.ideas_ids[0], '1')
+
+    @mock.patch("core.base.Base.db.store", dict(
+        Post=mock_posts
+    ))
+    def test_post_get_all_children_posts_should_pass(self):
+        children = post1.get_all_children_posts()
+        self.assertEqual(len(children), 4)
