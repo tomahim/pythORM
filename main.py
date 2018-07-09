@@ -200,9 +200,11 @@ if __name__ == '__main__':
         dict(id=1, pid=None),  # childs : 2, 3, 4, 5, 6
         dict(id=2, pid=1),
         dict(id=3, pid=2),
-        dict(id=4, pid=3),
         dict(id=5, pid=2),
-        dict(id=6, pid=2)
+        dict(id=6, pid=2),
+        dict(id=4, pid=3),
+        dict(id=7, pid=1),
+        dict(id=7, pid=7)
     ]
 
 
@@ -210,22 +212,18 @@ if __name__ == '__main__':
         return [child for child in items if child['pid'] in child_ids]
 
 
-    def find_recursive(items, child_ids, level=0):
-        # print('1 - get_children')
-        # print(child_ids)
-        children = get_children(items, child_ids)
-        # print('2 - children')
-        # print([child['id'] for child in children])
-        # print('2 - level ' + str(level))
-        if len(children) > 0:
-            print('    ' * (level) + str(children[0]['id']))
-            return find_recursive(items, [children[0]['id']], level + 1) + find_recursive(items, [child['id'] for child in
-                                                                                              children[1:]], level + 1)
-        else:
-            level -= 1
-            # print('-- stop \n')
-            return []
+    def find_recursive(items, parent_ids, level=0):
+        for parent_id in parent_ids:
+            children = get_children(items, [parent_id])
+            if len(children) > 0:
+                for child in children:
+                    print('    ' * (level) + str(child['id']))
+                    # for child in children:
+                    return find_recursive(items, [child['id'] for child in children[:1]], level+1)
+            elif len(children) == 0:
+                level -= 1
+                return []
 
 
-    print(find_recursive(items_list, [1]))
+    find_recursive(items_list, [1])
     print('END')
