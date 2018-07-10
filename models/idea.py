@@ -156,17 +156,17 @@ class Idea(Base):
     def print_all_ideas(self):
         """ Print a tree representing the Idea and its sub-ideas """
         print('Tree of ideas \n' + self.title)
-        self.__print_ideas_recursively(self.db.find_all(self), [self.id], 0)
+        self.__print_ideas_recursively(self.db.find_all(self), [self.id])
 
-    def __print_ideas_recursively(self, ideas, child_ids, level):
+    def __print_ideas_recursively(self, ideas, parent_ids, level=0):
         """ Recursively print children ideas hierarchy
         @:return list of children of an Idea"""
 
-        children = self.db.find_list_by(self, 'parent_idea_id', child_ids, in_operator=True)
-        if len(children) > 0:
-            print('    ' * level + children[0].title)
-            return self.__print_ideas_recursively(ideas, [children[0].id], level) \
-                   + self.__print_ideas_recursively(ideas, [child.id for child in children[1:]], level + 1)
-        else:
-            level -= 1
-            return []
+        for parent_id in parent_ids:
+            children = self.db.find_list_by(self, 'parent_idea_id', parent_id)
+            if len(children) > 0:
+                for child in children:
+                    print('    ' * level + children[0].title)
+                    self.__print_ideas_recursively(ideas, [child.id], level + 1)
+                else:
+                    level -= 1
