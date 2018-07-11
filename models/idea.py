@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from core.base import Base
-from core.column import Column, ColumnType
+from core.base import Base, Column, ColumnType
 from core.persistence import JoinType
 from models.post import Post
 from security.permission import ForbiddenActionException, PermissionType, permissions_check

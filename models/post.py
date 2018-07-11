@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from core.base import Base
-from core.column import Column, ColumnType
+from core.base import Base, Column, ColumnType
 
 from security.permission import ForbiddenActionException, PermissionType, permissions_check
 

@@ -1,5 +1,4 @@
-from core.base import Base
-from core.column import Column, ColumnType
+from core.base import Base, Column, ColumnType
 
 
 class User(Base):
