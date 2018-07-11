@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from core.base import Base, Column, ColumnType
-from core.b import Column, ColumnType
+from models.idea import Idea
+from models.post import Post
 
 
 class Discussion(Base):
@@ -78,6 +79,14 @@ class Discussion(Base):
 
     def add_post(self, post):
         self._posts = self.posts + post
+
+    def number_of_posts(self):
+        """ Return the total number of posts of the Discussion """
+        return len(self.db.find_list_by(Post, 'discussion_id', self.id))
+
+    def number_of_ideas(self):
+        """ Return the total number of posts of the Discussion """
+        return len(self.db.find_list_by(Idea, 'discussion_id', self.id))
 
     def all_posts_not_associated_to_idea(self):
         raise NotImplementedError()

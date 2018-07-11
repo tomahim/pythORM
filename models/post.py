@@ -145,21 +145,19 @@ class Post(Base):
         else:
             return []
 
-    
     def print_all_posts(self):
         """ Print a tree representing the Post and its sub-posts """
-        print('Tree of posts \n' + self.title)
-        self.__print_posts_recursively(self.db.find_all(self), [self.id])
+        print(self.text)
+        self.__print_posts_recursively(self.db.find_all(self), self.id)
 
-    def __print_posts_recursively(self, posts, parent_ids, level=0):
+    def __print_posts_recursively(self, posts, parent_id, level=1):
         """ Recursively print children posts hierarchy
         @:return list of children of an Post"""
 
-        for parent_id in parent_ids:
-            children = self.db.find_list_by(self, 'parent_post_id', parent_id)
-            if len(children) > 0:
-                for child in children:
-                    print('    ' * level + children[0].title)
-                    self.__print_posts_recursively(posts, [child.id], level + 1)
-                else:
-                    level -= 1
+        children = self.db.find_list_by(self, 'parent_post_id', parent_id)
+        if len(children) > 0:
+            for child in children:
+                print('    ' * level + child.text)
+                self.__print_posts_recursively(posts, child.id, level + 1)
+            else:
+                level -= 1

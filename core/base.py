@@ -66,13 +66,6 @@ class Column:
             return type(value)
 
 
-def get_primary_key_column(model):
-    """ Get the primary key Column
-    @return: The Column object
-    """
-    return next(iter([col for col in model.columns if col.primary_key]), None)
-
-
 class ModelRestrictionError(Exception):
     """ Specific Exception class for model definition checks """
 

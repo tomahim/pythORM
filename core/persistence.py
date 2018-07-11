@@ -1,7 +1,6 @@
 import uuid
 from abc import ABCMeta, abstractmethod
 
-from core.base import get_primary_key_column
 import base
 from utils.utils import enum
 
@@ -45,11 +44,11 @@ class InMemory(DB):
     store = dict()
 
     def find_all(self, model):
-        model_name = self.__get_model_name(model)
+        model_name = get_model_name(model)
         return self.store.get(model_name)
 
     def find_one_by(self, model, column_name, column_value):
-        model_name = self.__get_model_name(model)
+        model_name = get_model_name(model)
         all_items = self.store.get(model_name)
         if not all_items:
             return None
@@ -60,7 +59,7 @@ class InMemory(DB):
         return self.find_one_by(model, pk_column.column_name, obj_id)
 
     def find_list_by(self, model, column_name, column_value, in_operator=False, join=JoinType.INNER):
-        model_name = self.__get_model_name(model)
+        model_name = get_model_name(model)
         all_items = self.store.get(model_name)
         if not all_items:
             return None
@@ -72,14 +71,13 @@ class InMemory(DB):
             return [item for item in all_items if column_value == getattr(item, column_name)]
 
     def upsert(self, model):
-        model_name = self.__get_model_name(model)
+        model_name = get_model_name(model)
         pk_column = get_primary_key_column(model)
         pk_name = pk_column.column_name
         obj_id = getattr(model, pk_column.column_name)
         # update if a primary key is already defined
         if obj_id:
             existing = self.find_by_id(model, obj_id)
-            print(existing)
             if existing:
                 map(lambda item: model if getattr(item, pk_column.column_name) == obj_id else item,
                     self.store.get(model_name))
@@ -87,7 +85,7 @@ class InMemory(DB):
                 raise DbException('Object with unknown id')
         else:
             # no primary key, generate id and insert new data
-            setattr(model, pk_name, self.__generate_id())
+            setattr(model, pk_name, generate_id())
             # if no object of this model stored before, we initialize a list
             if model_name not in self.store:
                 self.store.update({model_name: [model]})
@@ -98,7 +96,7 @@ class InMemory(DB):
         return model
 
     def delete(self, model):
-        model_name = self.__get_model_name(model)
+        model_name = get_model_name(model)
         pk_column = get_primary_key_column(model)
         obj_id = getattr(model, pk_column.column_name)
         all_items = self.store.get(model_name)
@@ -107,13 +105,22 @@ class InMemory(DB):
                 model_name: [item for item in all_items if getattr(item, pk_column.column_name) != obj_id]
             })
 
-    def __get_model_name(self, model):
-        """ Determine a string identifier for the model based on the class name
-        @:return model class name """
-        return model.__class__.__name__ if isinstance(model, base.Base) else model.__name__
 
-    def __generate_id(self):
-        return uuid.uuid4()
+def get_model_name(model):
+    """ Determine a string identifier for the model based on the class name
+    @:return model class name """
+    return model.__class__.__name__ if isinstance(model, base.Base) else model.__name__
+
+
+def generate_id():
+    return uuid.uuid4()
+
+
+def get_primary_key_column(model):
+    """ Get the primary key Column
+    @return: The Column object
+    """
+    return next(iter([col for col in model.columns if col.primary_key]), None)
 
 
 class DbException(Exception):

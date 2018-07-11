@@ -17,6 +17,7 @@ def init_users():
         PermissionType.ADD_POST,
         PermissionType.ADD_IDEA,
         PermissionType.REMOVE_IDEA,
+        PermissionType.REMOVE_IDEA,
         PermissionType.REMOVE_POST
     ])
     bob = User(
@@ -70,7 +71,7 @@ def init_posts(discussion_id):
             creator_id=user_john.id
         ).persist(),
         Post(
-            text='Post 6 without reply',
+            text='Post 6 -> Reply to post 2',
             discussion_id=discussion_id,
             creator_id=user_john.id
         ).persist(),
@@ -86,7 +87,7 @@ def init_ideas(discussion_id):
     return [
         Idea(
             discussion_id=discussion_id,
-            title="Great idea",
+            title="The parent idea about saving the environment",
             description="One idea to rule them all",
             creator_id=user_john.id
         ).persist(),
@@ -98,13 +99,13 @@ def init_ideas(discussion_id):
         ).persist(),
         Idea(
             discussion_id=discussion_id,
-            title='Planes',
+            title='Plane flights should be replace with boat trips',
             description='We should avoid using planes',
             creator_id=user_anna.id
         ).persist(),
         Idea(
             discussion_id=discussion_id,
-            title="Jet pack",
+            title="We should avoid helicopter flights",
             description="How about not using jet pack either",
             creator_id=user_anna.id
         ).persist()
@@ -118,15 +119,15 @@ def desc(msg):
 
 
 if __name__ == '__main__':
-
     desc('Init some users to work with')
 
     [user_john, user_bob, user_anna] = init_users()
 
     user_session = UserSession()
 
-    desc('Connect with user bob, if not @permissions_check decorator will raise an exception')
+    desc('Connect with user bob, if not connected @permissions_check decorator will raise an exception')
 
+    # create a fake user session
     user_session.connect(user_bob)
 
     desc('Create a discussion')
@@ -137,22 +138,38 @@ if __name__ == '__main__':
         creator_id=user_anna.id
     ).persist()
 
-
     desc('Create posts')
 
     [post1, post2, post3, post4, post5, post6, post7] = init_posts(discussion_environment.id)
 
+    print('Nb of posts in the discussion : %s' % discussion_environment.number_of_posts())
+    print('\n')
+
     desc('Create ideas')
 
-    [parent_idea, idea_about_cars, idea_about_planes, idea_about_jet_pack] = init_ideas(discussion_environment.id)
+    [parent_idea, idea_about_cars, idea_about_planes, idea_about_helicopter] = init_ideas(discussion_environment.id)
 
+    print('Nb of ideas in the discussion : %s' % discussion_environment.number_of_ideas())
+    print('\n')
+    
     desc('Update an idea with a more specific title')
 
-    print(idea_about_cars.title)
+    print('Title before update : %s' % idea_about_cars.title + '\n')
 
-    idea_about_cars.title = 'Cars are not good'
+    idea_about_cars.title = 'Cars consume too much energy'
 
     idea_about_cars = idea_about_cars.persist()
+
+    print('Title after update : %s' % idea_about_cars.title + '\n')
+
+    desc('Delete a post')
+
+    print('Nb of posts before delete : %s' % discussion_environment.number_of_posts())
+
+    post7.delete()
+
+    print('Nb of posts after delete : %s' % discussion_environment.number_of_posts())
+    print('\n')
 
     desc('Add relationships between posts')
 
@@ -160,23 +177,42 @@ if __name__ == '__main__':
     post1.reply_with_post(post3)
     post2.reply_with_post(post4)
     post4.reply_with_post(post5)
+    post2.reply_with_post(post6)
 
-    desc('Here is a representation of the posts hierarchy (idents mean that the post reply to the post to the top)')
+    desc('Get all children ideas for the post 1')
+
+    children_posts = post1.get_all_children_posts()
+
+    for index, child in enumerate(children_posts):
+        print('Child %s : %s' % (index+1, child.text))
+    print('\n')
+
+    desc('Representation of the posts hierarchy (idents mean that the post reply to the post to the top)')
 
     post1.print_all_posts()
-    
+    print('\n')
+
     desc('Add relationships between ideas')
 
     parent_idea.associate_to_idea(idea_about_cars)
     parent_idea.associate_to_idea(idea_about_planes)
 
-    idea_about_planes.associate_to_idea(idea_about_jet_pack)
-    
-    desc('Here is a representation of the ideas hierarchy (idents mean that the post reply to the post to the top)')
+    idea_about_planes.associate_to_idea(idea_about_helicopter)
 
-    idea1.print_all_ideas()
+    desc('Get all children ideas for the parent_idea')
 
-    desc('associate posts with ideas')
+    children_ideas = parent_idea.get_all_children_ideas()
+
+    for index, child in enumerate(children_ideas):
+        print('Child %s : %s' % (index+1, child.title))
+    print('\n')
+
+    desc('Representation of the ideas hierarchy')
+
+    parent_idea.print_all_ideas()
+    print('\n')
+
+    desc('Associate posts with ideas')
 
     post6.associate_with_idea(parent_idea)
     post2.associate_with_idea(parent_idea)
@@ -187,12 +223,10 @@ if __name__ == '__main__':
     post3.associate_with_idea(idea_about_planes)
     post1.associate_with_idea(idea_about_planes)
 
-    print(parent_idea.number_of_messages())
-    
-    print(parent_idea.number_of_participants())
-    
-    print(post1.get_all_children_posts())
-    
-    print(parent_idea.get_all_children_ideas())
+    desc('Get number of messages for parent_idea')
 
-    parent_idea.print_all_ideas()
+    print('Nb of messages : %s' % parent_idea.number_of_messages() + '\n')
+
+    desc('Get number of participants')
+
+    print('Nb of participants : %s' % parent_idea.number_of_participants() + '\n')
