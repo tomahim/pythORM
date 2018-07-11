@@ -1,6 +1,6 @@
-# Pythorm
+# PythORM
 
-Pythorm project intends to create a minimalist ORM-like library. 
+PythORM project intends to create a minimalist ORM-like library. 
 
 For now, data are kept in memory, but other persistence units can be implemented in the future.
 
