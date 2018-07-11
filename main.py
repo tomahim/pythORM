@@ -43,71 +43,71 @@ def init_users():
     return [john, bob, anna]
 
 
-def init_posts(discussion_id):
+def init_posts(discussion_id, user_bob_id, user_john_id, user_anna_id):
     return [
         Post(
             text='Post 1',
             discussion_id=discussion_id,
-            creator_id=user_bob.id
+            creator_id=user_bob_id
         ).persist(),
         Post(
             text='Post 2 -> reply to post 1',
             discussion_id=discussion_id,
-            creator_id=user_john.id
-        ),
+            creator_id=user_john_id
+        ).persist(),
         Post(
             text='Post 3 -> Reply to post 1',
             discussion_id=discussion_id,
-            creator_id=user_anna.id
+            creator_id=user_anna_id
         ).persist(),
         Post(
             text='Post 4 -> Reply to post 2',
             discussion_id=discussion_id,
-            creator_id=user_anna.id
+            creator_id=user_anna_id
         ).persist(),
         Post(
             text='Post 5 -> Reply to post 4',
             discussion_id=discussion_id,
-            creator_id=user_john.id
+            creator_id=user_john_id
         ).persist(),
         Post(
             text='Post 6 -> Reply to post 2',
             discussion_id=discussion_id,
-            creator_id=user_john.id
+            creator_id=user_john_id
         ).persist(),
         Post(
             text='Post 7 to delete',
             discussion_id=discussion_id,
-            creator_id=user_john.id
+            creator_id=user_john_id
         ).persist()
     ]
 
 
-def init_ideas(discussion_id):
+def init_ideas(discussion_id, user_bob_id, user_john_id, user_anna_id):
     return [
         Idea(
             discussion_id=discussion_id,
             title="The parent idea about saving the environment",
             description="One idea to rule them all",
-            creator_id=user_john.id
+            creator_id=user_john_id
         ).persist(),
         Idea(
             discussion_id=discussion_id,
             title='Cars',
             description='We should avoid using cars',
-            creator_id=user_bob.id
+            creator_id=user_bob_id
         ).persist(),
         Idea(
             discussion_id=discussion_id,
             title='Plane flights should be replace with boat trips',
             description='We should avoid using planes',
-            creator_id=user_anna.id
+            creator_id=user_anna_id
         ).persist(),
         Idea(
             discussion_id=discussion_id,
             title="We should avoid helicopter flights",
             description="How about not using jet pack either",
-            creator_id=user_anna.id
+            creator_id=user_anna_id
         ).persist()
     ]
 
@@ -140,14 +140,16 @@ if __name__ == '__main__':
 
     desc('Create posts')
 
-    [post1, post2, post3, post4, post5, post6, post7] = init_posts(discussion_environment.id)
+    [post1, post2, post3, post4, post5, post6, post7] = \
+        init_posts(discussion_environment.id, user_bob.id, user_john.id, user_anna.id)
 
     print('Nb of posts in the discussion : %s' % discussion_environment.number_of_posts())
     print('\n')
 
     desc('Create ideas')
 
-    [parent_idea, idea_about_cars, idea_about_planes, idea_about_helicopter] = init_ideas(discussion_environment.id)
+    [parent_idea, idea_about_cars, idea_about_planes, idea_about_helicopter] = \
+        init_ideas(discussion_environment.id, user_bob.id, user_john.id, user_anna.id)
 
     print('Nb of ideas in the discussion : %s' % discussion_environment.number_of_ideas())
     print('\n')
