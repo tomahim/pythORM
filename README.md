@@ -1,6 +1,6 @@
-# Pythorm
+# PythORM
 
-Pythorm project intends to create a minimalist ORM-like library. 
+PythORM project intends to create a minimalist ORM-like library. 
 
 For now, data are kept in memory, but other persistence units can be implemented in the future.
 
@@ -40,7 +40,9 @@ python main.py
 
 ### API reference
 
-![alt text](http://url/to/img.png)
+<div align="center">
+ <img alt="diagram class" src="https://raw.githubusercontent.com/tomahim/pythorm/master/docs/diagram%20models.png" width="550"/>
+</div>
 
 ##### Define a model by inheriting the abstract Base class
 
