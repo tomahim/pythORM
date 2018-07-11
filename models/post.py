@@ -107,9 +107,6 @@ class Post(Base):
     def delete(self):
         return super(Post, self).delete()
 
-    def get_total_posts(self):
-        return len(self.db.find_all())
-
     @permissions_check(PermissionType.ADD_POST)
     def reply_with_post(self, post):
         """ Reply to the current post by another post

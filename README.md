@@ -40,6 +40,8 @@ python main.py
 
 ### API reference
 
+![alt text](http://url/to/img.png)
+
 ##### Define a model by inheriting the abstract Base class
 
 ```python
@@ -176,6 +178,3 @@ The following methods are available too : `get_all_children_ideas()`, `number_of
     - `number_of_participants()` : total participants of a discussion
 
 * Use the `foreign_key` attribute of a `Column` to fetch linked data (relations between Discussion, posts and ideas) with functions like `discussion.fetch(Post)`.
-
-
-
