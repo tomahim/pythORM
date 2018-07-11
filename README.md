@@ -40,7 +40,7 @@ python main.py
 
 ### API reference
 
-![diagram classes](https://raw.githubusercontent.com/tomahim/pythorm/master/docs/diagram%20models.png =250x250)
+ <img alt="diagram class" src="https://raw.githubusercontent.com/tomahim/pythorm/master/docs/diagram%20models.png" width="450"/>
 
 ##### Define a model by inheriting the abstract Base class
 
