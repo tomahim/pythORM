@@ -14,7 +14,7 @@ For now, data are kept in memory, but other persistence units can be implemented
 
 ### Pre-requirements and installation
 
-This project requires the Python 2.7 version. It has only unittest as dependency.
+This project requires the Python 2.7 version. It has only the mock package as dependency.
 
 To install it, run : 
 
