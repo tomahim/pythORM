@@ -6,6 +6,9 @@ from models.discussion import Discussion
 
 class TestDiscussion(unittest.TestCase):
 
+    def setUp(self):
+        print('In method ' + self._testMethodName)
+
     def test_discussion_init_should_set_a_default_creation_date(self):
         # when
         discussion = Discussion(

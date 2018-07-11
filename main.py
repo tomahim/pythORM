@@ -151,7 +151,7 @@ if __name__ == '__main__':
 
     print('Nb of ideas in the discussion : %s' % discussion_environment.number_of_ideas())
     print('\n')
-    
+
     desc('Update an idea with a more specific title')
 
     print('Title before update : %s' % idea_about_cars.title + '\n')

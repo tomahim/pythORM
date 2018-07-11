@@ -21,6 +21,9 @@ class ModelExample(Base):
 
 class TestBase(unittest.TestCase):
 
+    def setUp(self):
+        print('In method ' + self._testMethodName)
+
     def test_init_should_raise_exception_on_column_name_not_found(self):
         """ Attempt to create a model object with an unknown column name should raise exception """
         with self.assertRaises(ModelRestrictionError) as context:

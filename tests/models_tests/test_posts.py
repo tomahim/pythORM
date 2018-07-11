@@ -92,6 +92,9 @@ mock_ideas = [idea1]
 
 class TestPost(unittest.TestCase):
 
+    def setUp(self):
+        print('In method ' + self._testMethodName)
+
     @mock.patch("security.auth.UserSession.current_user", mock_user_forbidden)
     def test_post_persist_should_check_create_permission(self):
         with self.assertRaises(ForbiddenActionException) as context:

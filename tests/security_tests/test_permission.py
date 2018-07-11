@@ -32,6 +32,9 @@ mock_user_allowed.set_global_permissions([
 
 class TestPermission(unittest.TestCase):
 
+    def setUp(self):
+        print('In method ' + self._testMethodName)
+
     def test_permissions_check_should_raise_exception_if_no_user_connected(self):
         """ Attempt to do an action without permissions """
         with self.assertRaises(UserNotLoggedException) as context:

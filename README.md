@@ -24,7 +24,7 @@ pip install -r requirements.txt
 
 ### Run unit tests
 
-The unit tests cover the core features of the project and some mo From the root of the project run
+From the root of the project run
 
 ```
 python -m unittest discover tests
@@ -60,7 +60,7 @@ class Post(Base):
         self._id = None
         self._text = text
 
-    // define getter and setter ...
+    // define getters and setters ...
 ```
 
 The Base class provide an access to the `DB` object, which contains some basic operations like `persist()`, `delete()`, `find_all()`, `find_by_id(id)` ... and more !

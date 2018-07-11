@@ -2,7 +2,7 @@ import unittest
 
 from datetime import datetime
 
-from core.base import Base, Column, ColumnType, get_primary_key_column
+from core.base import Base, Column, ColumnType
 
 
 class ModelExample(Base):
@@ -16,6 +16,9 @@ class ModelExample(Base):
 
 
 class TestColumn(unittest.TestCase):
+
+    def setUp(self):
+        print('In method ' + self._testMethodName)
 
     def test_init_should_set_instance_variables(self):
         column = Column('custom_name', ColumnType.STRING)
@@ -53,7 +56,3 @@ class TestColumn(unittest.TestCase):
         result = column.is_correct_value_type(datetime.now())
         # then
         self.assertTrue(result)
-
-    def test_get_primary_column_should_retrieve_id(self):
-        col = get_primary_key_column(ModelExample())
-        self.assertEqual(col.column_name, 'id')

@@ -115,6 +115,9 @@ mock_posts = [post1, post2, post3]
 
 class TestIdea(unittest.TestCase):
 
+    def setUp(self):
+        print('In method ' + self._testMethodName)
+
     def test_idea_init_should_set_attributes(self):
         idea = Idea(
             discussion_id='54354654',

@@ -5,6 +5,9 @@ from models.user import User
 
 class TestUser(unittest.TestCase):
 
+    def setUp(self):
+        print('In method ' + self._testMethodName)
+
     def test_user_init_should_set_attributes(self):
         user = User(
             username='anna',
