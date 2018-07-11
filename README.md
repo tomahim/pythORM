@@ -40,7 +40,7 @@ python main.py
 
 ### API reference
 
-![alt text](http://url/to/img.png)
+![diagram classes](/tomahim/pythorm/blob/master/docs/diagram%20models.png?raw=true)
 
 ##### Define a model by inheriting the abstract Base class
 
