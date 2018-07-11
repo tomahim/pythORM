@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from core.base import Base
-from core.column import Column, ColumnType
+from core.base import Base, Column, ColumnType
+from core.b import Column, ColumnType
 
 
 class Discussion(Base):

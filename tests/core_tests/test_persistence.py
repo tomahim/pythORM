@@ -1,8 +1,6 @@
 import unittest
 
-from core.base import Base
-from core.column import Column, ColumnType
-
+from core.base import Base, Column, ColumnType
 
 class ModelExample(Base):
     columns = [

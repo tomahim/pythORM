@@ -142,10 +142,11 @@ if __name__ == '__main__':
 
     [post1, post2, post3, post4, post5, post6, post7] = init_posts(discussion_environment.id)
 
-    # create ideas
+    desc('Create ideas')
+
     [parent_idea, idea_about_cars, idea_about_planes, idea_about_jet_pack] = init_ideas(discussion_environment.id)
 
-    # update an idea with a more specific title
+    desc('Update an idea with a more specific title')
 
     print(idea_about_cars.title)
 
@@ -160,22 +161,22 @@ if __name__ == '__main__':
     post2.reply_with_post(post4)
     post4.reply_with_post(post5)
 
-    desc('Here is a representation of the posts (idents mean that the post reply to the post to the top)')
-
-    # post1
-    #   post2
-    #   post3
-    # post4
-    #   post5
+    desc('Here is a representation of the posts hierarchy (idents mean that the post reply to the post to the top)')
 
     post1.print_all_posts()
-
-    desc('Update an idea')
+    
+    desc('Add relationships between ideas')
 
     parent_idea.associate_to_idea(idea_about_cars)
     parent_idea.associate_to_idea(idea_about_planes)
 
     idea_about_planes.associate_to_idea(idea_about_jet_pack)
+    
+    desc('Here is a representation of the ideas hierarchy (idents mean that the post reply to the post to the top)')
+
+    idea1.print_all_ideas()
+
+    desc('associate posts with ideas')
 
     post6.associate_with_idea(parent_idea)
     post2.associate_with_idea(parent_idea)
@@ -186,44 +187,12 @@ if __name__ == '__main__':
     post3.associate_with_idea(idea_about_planes)
     post1.associate_with_idea(idea_about_planes)
 
-    # print(parent_idea.number_of_messages())
-    #
-    # print(parent_idea.number_of_participants())
-    #
-    # print(post1.get_all_children_posts())
-    #
-    # print(parent_idea.get_all_children_ideas())
+    print(parent_idea.number_of_messages())
+    
+    print(parent_idea.number_of_participants())
+    
+    print(post1.get_all_children_posts())
+    
+    print(parent_idea.get_all_children_ideas())
 
     parent_idea.print_all_ideas()
-
-    items_list = [
-        dict(id=1, pid=None),  # childs : 2, 3, 4, 5, 6
-        dict(id=2, pid=1),
-        dict(id=3, pid=2),
-        dict(id=5, pid=2),
-        dict(id=6, pid=2),
-        dict(id=4, pid=3),
-        dict(id=7, pid=1),
-        dict(id=7, pid=7)
-    ]
-
-
-    def get_children(items, child_ids):
-        return [child for child in items if child['pid'] in child_ids]
-
-
-    def find_recursive(items, parent_ids, level=0):
-        for parent_id in parent_ids:
-            children = get_children(items, [parent_id])
-            if len(children) > 0:
-                for child in children:
-                    print('    ' * (level) + str(child['id']))
-                    # for child in children:
-                    return find_recursive(items, [child['id'] for child in children[:1]], level+1)
-            elif len(children) == 0:
-                level -= 1
-                return []
-
-
-    find_recursive(items_list, [1])
-    print('END')

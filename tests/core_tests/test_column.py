@@ -2,8 +2,7 @@ import unittest
 
 from datetime import datetime
 
-from core.base import Base
-from core.column import Column, ColumnType, get_primary_key_column
+from core.base import Base, Column, ColumnType, get_primary_key_column
 
 
 class ModelExample(Base):

@@ -1,7 +1,7 @@
 import uuid
 from abc import ABCMeta, abstractmethod
 
-from core.column import get_primary_key_column
+from core.base import get_primary_key_column
 import base
 from utils.utils import enum
 

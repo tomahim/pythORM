@@ -1,7 +1,6 @@
 import unittest
 
-from core.base import Base, ModelRestrictionError
-from core.column import Column, ColumnType
+from core.base import Base, ModelRestrictionError, Column, ColumnType
 
 
 class ModelExample(Base):
