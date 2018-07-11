@@ -171,11 +171,11 @@ The following methods are available too : `get_all_children_ideas()`, `number_of
 
 ### Possible improvements
 
-* Implement a User.set_local_permissions() : for example, we could consider PermissionType as a model and link it to the `User` and the `Discussion` model. So we 
+* Implement a User.set_local_permissions() : for example, we could consider PermissionType as a model and link it to the `User` and the `Discussion` model. So we can set precisely which objects the user can read, create, update or delete.
 
 * Implement these methods on the `Discussion` model :
 
-    - `all_posts_associated_to_idea()` : get the posts associated to alteast one idea
+    - `all_posts_associated_to_idea()` : get the posts associated to at least one idea
     - `all_posts_not_associated_to_idea()` : get the posts not associated to an idea
     - `number_of_participants()` : total participants of a discussion
 
