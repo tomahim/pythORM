@@ -79,7 +79,7 @@ class Discussion(Base):
     def add_post(self, post):
         self._posts = self.posts + post
 
-    def all_posts_associated_to_idea(self, idea_id):
+    def all_posts_not_associated_to_idea(self):
         raise NotImplementedError()
 
     def all_posts_not_associated_to_idea(self):
