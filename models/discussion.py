@@ -85,7 +85,7 @@ class Discussion(Base):
         return len(self.db.find_list_by(Post, 'discussion_id', self.id))
 
     def number_of_ideas(self):
-        """ Return the total number of posts of the Discussion """
+        """ Return the total number of ideas of the Discussion """
         return len(self.db.find_list_by(Idea, 'discussion_id', self.id))
 
     def all_posts_associated_to_idea(self):

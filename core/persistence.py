@@ -44,10 +44,14 @@ class InMemory(DB):
     store = dict()
 
     def find_all(self, model):
+        """ Find all objects of model type in the store
+        @return list of model"""
         model_name = get_model_name(model)
         return self.store.get(model_name)
 
     def find_one_by(self, model, column_name, column_value):
+        """ Find one object of model type that matches the condition
+        @return model found or None"""
         model_name = get_model_name(model)
         all_items = self.store.get(model_name)
         if not all_items:
@@ -55,10 +59,14 @@ class InMemory(DB):
         return next(iter([item for item in all_items if getattr(item, column_name) == column_value]), None)
 
     def find_by_id(self, model, obj_id):
+        """ Find one object by its primary key
+        @return model found or None"""
         pk_column = get_primary_key_column(model)
         return self.find_one_by(model, pk_column.column_name, obj_id)
 
     def find_list_by(self, model, column_name, column_value, in_operator=False, join=JoinType.INNER):
+        """ A way to find a list of models supporting in operator
+        @return model found or None"""
         model_name = get_model_name(model)
         all_items = self.store.get(model_name)
         if not all_items:
@@ -71,6 +79,8 @@ class InMemory(DB):
             return [item for item in all_items if column_value == getattr(item, column_name)]
 
     def upsert(self, model):
+        """ Insert or update (if found) the model object
+        @return the inserted or updated model"""
         model_name = get_model_name(model)
         pk_column = get_primary_key_column(model)
         pk_name = pk_column.column_name
@@ -96,6 +106,7 @@ class InMemory(DB):
         return model
 
     def delete(self, model):
+        """ delete one object """
         model_name = get_model_name(model)
         pk_column = get_primary_key_column(model)
         obj_id = getattr(model, pk_column.column_name)
